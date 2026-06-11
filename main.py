@@ -2,9 +2,27 @@
 # Mars Rover Dust Sensing System
 #===============================
 #Logan Brown
-#6/03/2026
+#6/11/2026
 
 from math import pi
+
+#-------------------------
+#Formula for Displacement:
+#-------------------------
+#find wheel circumference then mutiply by amount of wheel rotations
+def displacement_calc(rotational_velocity, time):
+    wheel_diam = 0.50  # meters
+    circumference = wheel_diam * pi
+    rotations = (rotational_velocity / 60) * time
+    displacement = rotations * circumference
+    return displacement
+
+#-----------------------------
+#Battery Consumption Notifier:
+#-----------------------------
+def battery_drainage(battery, reduced):
+    return battery - reduced
+
 
 #Variables
 rover_s = "Stationary "
@@ -58,24 +76,23 @@ if rover_status == rover_c:
     print("Solar panels are clear of all dust!") 
     print("Resuming all operations and restoring battery reserves to full charge. ")
 
+
+import matplotlib.pyplot as plt
+battery_percentage =[100, 90, 80, 70, 60, 50, 40, 30, 20, 10]
+days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+plt.style.use('Solarize_Light2')
+plt.plot(days, battery_percentage, color='blue')
+plt.xlabel('Days during a dust storm at full functionality')
+plt.ylabel('Battery %')
+plt.show()
+
 #===========================
 #Sand trap manuvering system 
 #===========================
 #rover must detect that it is stuck, so we are going to ask the user to input rotational velocity [m/s] and time [s] to calculate for displacement
 #if the displacement is zero, then the rover knows its stuck and will intiate the manuvering system 
 
-#-------------------------
-#Formula for Displacement:
-#-------------------------
-#find wheel circumference then mutiply by amount of wheel rotations
-def displacement_calc(rotational_velocity, time):
-    wheel_diam = 0.50  # meters
-    circumference = wheel_diam * pi
-    rotations = (rotational_velocity / 60) * time
-    displacement = rotations * circumference
-    return displacement
-
-# Get inputs and calculate displacement once
+# Get inputs and calculate expected displacement once
 velocity = float(input("Enter rotational velocity (rotations per minute): "))
 time = float(input("Enter time in seconds: "))
 displacement = displacement_calc(velocity, time)
@@ -88,7 +105,10 @@ while True:
         print(f"Rover's actual displacement: {displacement:.2f} meters.")
         break
     elif rover_moving_check == "No":
-        print("Actual displacement is 0! Rover is stuck, extending wheel paddles...")
+        print("Actual displacement is less than expected! Rover is stuck, extending wheel paddles...")
+        battery = int(input("Enter current battery percentage: "))
+        battery = battery_drainage(battery, 10)
+        print(f"Estimated battery after using extended paddles: {battery}")
         while True:
             rover_moving_check2 = input("Is rover moving after extending paddles? (Yes/No): ")
             if rover_moving_check2 == "Yes":
