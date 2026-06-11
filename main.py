@@ -4,6 +4,8 @@
 #Logan Brown
 #6/03/2026
 
+from math import pi
+
 #Variables
 rover_s = "Stationary "
 rover_o = "Operating "
@@ -11,9 +13,9 @@ rover_c = "Panels dirty, initating cleaning process. "                          
 rover_m = "Rover is currently moving. "
 rover_status = rover_o                                                                              #setting the default status to operating is the intial status of the rover beginning its mission objective
 battery_reserves = 100
-dust_storm = (input("Dust storm status: (Active/Clear)"))                                           #This information is acquired through a sensor. 
 
 while True:
+    dust_storm = (input("Dust storm status: (Active/Clear)"))                                           #This information is acquired through a sensor. 
     if dust_storm == "Clear":
         solar_panels = int(input("Dust accumulation percentage (1-100): "))
         if solar_panels <= 10:
@@ -66,36 +68,43 @@ if rover_status == rover_c:
 #Formula for Displacement:
 #-------------------------
 #find wheel circumference then mutiply by amount of wheel rotations
-from math import pi
-def displacement_calc(rotational_velocity , time):
-    wheel_diam = 0.50 #meters
+def displacement_calc(rotational_velocity, time):
+    wheel_diam = 0.50  # meters
     circumference = wheel_diam * pi
-    rotations = (rotational_velocity / 60) * time 
+    rotations = (rotational_velocity / 60) * time
     displacement = rotations * circumference
-    return displacement 
+    return displacement
 
-rover_moving_check = input("Is rover currently moving? (Yes/No)") #Calculated through accelerometer inside rover
+# Get inputs and calculate displacement once
+velocity = float(input("Enter rotational velocity (rotations per minute): "))
+time = float(input("Enter time in seconds: "))
+displacement = displacement_calc(velocity, time)
+print(f"Expected displacement: {displacement:.2f} meters")
+
 while True:
+    rover_moving_check = input("Is rover currently moving? (Yes/No): ")
     if rover_moving_check == "Yes":
-        #----------------------------------------------------------------------------
-        velocity = float(input("Enter rotational velocity (rotations per minute): "))
-        time = float(input("Enter time in seconds: "))
-        displacement = displacement_calc(velocity, time)
-        print(f"Expected displacement: {displacement:.2f} meters")
-        #----------------------------------------------------------------------------
-
-        print("Rover is moving normally continuing all operations.")
-        print(f"Rover's actual displacement: {displacement:.2f} meters. ")
+        print("Rover is moving normally, continuing all operations.")
+        print(f"Rover's actual displacement: {displacement:.2f} meters.")
         break
     elif rover_moving_check == "No":
-        #----------------------------------------------------------------------------
-        velocity = float(input("Enter rotational velocity (rotations per minute): "))
-        time = float(input("Enter time in seconds: "))
-        displacement = displacement_calc(velocity, time)
-        print(f"Expected displacement: {displacement:.2f} meters")
-        #----------------------------------------------------------------------------
-        
-        print("Rover is stuck! Extending wheel paddles... ")
+        print("Actual displacement is 0! Rover is stuck, extending wheel paddles...")
+        while True:
+            rover_moving_check2 = input("Is rover moving after extending paddles? (Yes/No): ")
+            if rover_moving_check2 == "Yes":
+                print("Rover has been freed! Resuming all operations.")
+                break
+            elif rover_moving_check2 == "No":
+                print(f"Reducing wheel RPM from {velocity} to {velocity - 10} RPM...")
+                velocity -= 10
+                if velocity <= 0:
+                    print("WARNING: Wheel RPM at zero! Rover is completely stuck!")
+                    print("Sending distress signal to mission control...")
+                    break
+                else:
+                    print(f"Retrying with {velocity} RPM...")
+            else:
+                print("Invalid input, please try again")
         break
-    else: 
+    else:
         print("Invalid input, please try again")
