@@ -59,5 +59,6 @@ if rover_status == rover_c:
     print("Solar panels are clear of all dust!") 
     print("Resuming all operations and restoring battery reserves to full charge. ")
 
-
-
+#===========================
+#Sand trap manuvering system 
+#===========================
